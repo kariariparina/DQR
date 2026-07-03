@@ -1,77 +1,37 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<title>QR生成ツール</title>
+<title>QR Generator</title>
 
 <link rel="stylesheet" href="style.css">
 
-</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
+</head>
 <body>
 
-<div class="container">
+<h2>QR Generator</h2>
 
-<h1>QR生成ツール</h1>
+<div class="panel">
 
-<div class="inputBox">
+<label>変換code</label>
+<input id="playerid" placeholder="cc0db7">
 
-<label>
+<label>目標RSID</label>
+<input id="rsid" placeholder="aoFMuZ">
 
-変換code
-
-</label>
-
-<input
-id="playerId"
-type="text"
-placeholder="例：cc0db7">
-
-</div>
-
-<div class="inputBox">
-
-<label>
-
-目標RSID
-
-</label>
-
-<input
-id="targetRsid"
-type="text"
-placeholder="例：aoFMuZ">
-
-</div>
-
-<button id="generateButton">
-
+<button id="generate">
 QRコード生成
-
 </button>
 
-<p id="status">
-
-データ読込中...
-
-</p>
-
-<div id="qr"></div>
-
-<pre id="log"></pre>
-
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<div id="result"></div>
+
+<div id="qrcode"></div>
 
 <script src="script.js"></script>
 
 </body>
-
 </html>
