@@ -1,139 +1,189 @@
 // ==========================================
 // QR生成ツール
 // script.js
-// 前半
+// 完成版 Part1
 // ==========================================
 
-// 全RSIDを格納
+// ----------------------------
+// データ
+// ----------------------------
 let rsidList = [];
-
-// データ読込完了フラグ
+let rsidMap = new Map();
 let dataLoaded = false;
 
+// ----------------------------
 // HTML
+// ----------------------------
 const status = document.getElementById("status");
 const log = document.getElementById("log");
 const qrArea = document.getElementById("qr");
 const button = document.getElementById("generateButton");
 
-// ------------------------------------------
-// 16進数2桁へ変換
-// ------------------------------------------
-function toHex(value) {
+// ----------------------------
+// 2桁16進数
+// ----------------------------
+function toHex(value){
 
-    return value.toString(16).padStart(2, "0");
+    return value.toString(16).padStart(2,"0");
 
 }
 
-// ------------------------------------------
-// 全256ファイル読込
-// ------------------------------------------
-async function loadDataset() {
+// ----------------------------
+// データセット読込
+// ----------------------------
+async function loadDataset(){
 
     status.textContent = "データを読み込んでいます...";
 
     rsidList = [];
+    rsidMap.clear();
 
-    for (let i = 0; i < 256; i++) {
+    try{
 
-        const filename = "rsids/" + toHex(i) + ".txt";
+        const requests = [];
 
-        try {
+        for(let i=0;i<256;i++){
 
-            const response = await fetch(filename);
+            requests.push(
 
-            if (!response.ok) {
+                fetch("rsids/" + toHex(i) + ".txt")
+                    .then(response=>{
 
-                throw new Error(filename);
+                        if(!response.ok){
 
-            }
+                            throw new Error(
+                                "rsids/" + toHex(i) + ".txt"
+                            );
 
-            const text = await response.text();
+                        }
+
+                        return response.text();
+
+                    })
+
+            );
+
+        }
+
+        const files = await Promise.all(requests);
+
+        let index = 0;
+
+        for(const text of files){
 
             const lines = text.split(/\r?\n/);
 
-            for (const line of lines) {
+            for(const line of lines){
 
                 const value = line.trim();
 
-                if (value.length > 0) {
+                if(value===""){
 
-                    rsidList.push(value);
+                    continue;
 
                 }
+
+                rsidList.push(value);
+
+                rsidMap.set(value,index);
+
+                index++;
 
             }
 
         }
 
-        catch (error) {
+        dataLoaded = true;
 
-            console.error(error);
+        status.textContent =
+            "読込完了：" +
+            rsidList.length +
+            "件";
 
-            status.textContent = filename + " の読み込みに失敗しました";
+    }
+    catch(error){
 
-            return;
+        console.error(error);
 
-        }
+        status.textContent =
+            "データセットの読込に失敗しました";
 
     }
 
-    dataLoaded = true;
-
-    status.textContent =
-        "読込完了（" + rsidList.length + "件）";
-
 }
 
-loadDataset();
-
-// ------------------------------------------
+// ----------------------------
 // RSID検索
-// Colab版 get_qr_index()
-// ------------------------------------------
-function getQrIndex(target) {
+// ----------------------------
+function getQrIndex(rsid){
 
-    return rsidList.indexOf(target);
+    if(rsidMap.has(rsid)){
+
+        return rsidMap.get(rsid);
+
+    }
+
+    return -1;
 
 }
 
-// ------------------------------------------
-// インデックスから文字列取得
-// Colab版 get_string_at_index()
-// ------------------------------------------
-function getStringAtIndex(index) {
+// ----------------------------
+// インデックスから取得
+// ----------------------------
+function getStringAtIndex(index){
 
-    if (index < 0) return null;
+    if(index<0){
 
-    if (index >= rsidList.length) return null;
+        return null;
+
+    }
+
+    if(index>=rsidList.length){
+
+        return null;
+
+    }
 
     return rsidList[index];
 
 }
-// ==========================================
-// QRコード生成
-// ==========================================
-function generateQRCode(text) {
 
-    qrArea.innerHTML = "";
+// ----------------------------
+// QR生成
+// ----------------------------
+function generateQR(text){
 
-    new QRCode(qrArea, {
-        text: text,
-        width: 220,
-        height: 220,
-        correctLevel: QRCode.CorrectLevel.L
+    qrArea.innerHTML="";
+
+    new QRCode(qrArea,{
+
+        text:text,
+
+        width:220,
+
+        height:220
+
     });
 
 }
 
+// ----------------------------
+// 起動時読込
+// ----------------------------
+loadDataset();
 // ==========================================
-// ボタン処理
+// QR生成ボタン
 // ==========================================
-button.addEventListener("click", function () {
+
+button.addEventListener("click", async function () {
 
     log.textContent = "";
 
     qrArea.innerHTML = "";
+
+    //--------------------------------------------------
+    // データ読込確認
+    //--------------------------------------------------
 
     if (!dataLoaded) {
 
@@ -148,23 +198,24 @@ button.addEventListener("click", function () {
     //--------------------------------------------------
 
     const playerIdHex =
-        document.getElementById("playerId")
+        document
+            .getElementById("playerId")
             .value
             .trim()
             .toLowerCase();
 
     const targetRsid =
-        document.getElementById("targetRsid")
+        document
+            .getElementById("targetRsid")
             .value
             .trim()
             .replaceAll("_", "");
 
     //--------------------------------------------------
-    // 入力チェック
+    // 未入力
     //--------------------------------------------------
 
-    if (playerIdHex.length === 0 ||
-        targetRsid.length === 0) {
+    if (playerIdHex === "" || targetRsid === "") {
 
         log.textContent =
             "プレイヤーIDと目標RSIDを入力してください。";
@@ -174,12 +225,10 @@ button.addEventListener("click", function () {
     }
 
     //--------------------------------------------------
-    // 16進数変換
+    // 16進数チェック
     //--------------------------------------------------
 
-    let idNum = parseInt(playerIdHex, 16);
-
-    if (isNaN(idNum)) {
+    if (!/^[0-9a-f]+$/i.test(playerIdHex)) {
 
         log.textContent =
             "プレイヤーIDは16進数で入力してください。";
@@ -189,56 +238,75 @@ button.addEventListener("click", function () {
     }
 
     //--------------------------------------------------
+    // 数値へ変換
+    //--------------------------------------------------
+
+    const idNum = parseInt(playerIdHex, 16);
+
+    //--------------------------------------------------
     // RSID検索
     //--------------------------------------------------
 
-    const rsidIndex =
-        getQrIndex(targetRsid);
+    const rsidIndex = getQrIndex(targetRsid);
 
     if (rsidIndex === -1) {
 
         log.textContent =
-            "RSIDが見つかりません。";
+            "RSIDが見つかりませんでした。";
 
         return;
 
     }
 
     //--------------------------------------------------
-    // Colab版と同じ計算
+    // Python版と同じ計算
     //--------------------------------------------------
 
     let newIndex = 0;
 
     newIndex +=
-        (0x100 +
+        ((0x100 +
             (rsidIndex & 0xff) -
             (idNum & 0xff))
-        & 0xff;
+        & 0xff);
 
     newIndex +=
-        (0x10000 +
+        ((0x10000 +
             (rsidIndex & 0xff00) -
             (idNum & 0xff00))
-        & 0xff00;
+        & 0xff00);
 
     newIndex +=
-        (0x1000000 +
+        ((0x1000000 +
             (rsidIndex & 0xff0000) -
             (idNum & 0xff0000))
-        & 0xff0000;
+        & 0xff0000);
 
     //--------------------------------------------------
-    // インデックス取得
+    // 範囲チェック
+    //--------------------------------------------------
+
+    if (newIndex < 0 ||
+        newIndex >= rsidList.length) {
+
+        log.textContent =
+            "計算結果がデータ範囲外です。";
+
+        return;
+
+    }
+
+    //--------------------------------------------------
+    // QR文字列取得
     //--------------------------------------------------
 
     const qrString =
         getStringAtIndex(newIndex);
 
-    if (qrString === null) {
+    if (qrString == null) {
 
         log.textContent =
-            "計算結果が範囲外です。";
+            "QR文字列が取得できませんでした。";
 
         return;
 
@@ -250,15 +318,21 @@ button.addEventListener("click", function () {
 
     log.textContent =
 `目標RSID : ${targetRsid}
-元位置    : ${rsidIndex.toString(16).padStart(6,"0")}
-適用ID    : ${playerIdHex}
-変換位置  : ${newIndex.toString(16).padStart(6,"0")}
-QR文字列  : ${qrString}`;
+
+元位置 : ${rsidIndex.toString(16).padStart(6,"0")}
+
+適用ID : ${playerIdHex}
+
+変換位置 : ${newIndex.toString(16).padStart(6,"0")}
+
+QR文字列 :
+
+${qrString}`;
 
     //--------------------------------------------------
     // QR生成
     //--------------------------------------------------
 
-    generateQRCode(qrString);
+    generateQR(qrString);
 
 });
