@@ -4,63 +4,69 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>QR生成ツール</title>
+
+<link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
 
-<h2>QR生成ツール</h2>
+<div class="container">
 
-<div>
+<h1>QR生成ツール</h1>
 
-    <label>変換code</label><br>
+<div class="inputBox">
 
-    <input
-        id="playerId"
-        type="text"
-        placeholder="例：cc0db7">
+<label>
 
-</div>
+変換code
 
-<br>
+</label>
 
-<div>
-
-    <label>目標RSID</label><br>
-
-    <input
-        id="targetRsid"
-        type="text"
-        placeholder="例：aoFMuZ">
+<input
+id="playerId"
+type="text"
+placeholder="例：cc0db7">
 
 </div>
 
-<br>
+<div class="inputBox">
+
+<label>
+
+目標RSID
+
+</label>
+
+<input
+id="targetRsid"
+type="text"
+placeholder="例：aoFMuZ">
+
+</div>
 
 <button id="generateButton">
 
-QRコードを生成
+QRコード生成
 
 </button>
 
-<hr>
+<p id="status">
 
-<div id="status">
+データ読込中...
 
-データを読み込み中...
-
-</div>
-
-<br>
+</p>
 
 <div id="qr"></div>
 
-<br>
-
 <pre id="log"></pre>
+
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
