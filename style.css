@@ -102,3 +102,43 @@ button{
 }
 
 }
+
+#history{
+
+margin-top:20px;
+
+}
+
+.history-item{
+
+background:white;
+
+padding:15px;
+
+margin-bottom:15px;
+
+border-radius:8px;
+
+box-shadow:0 2px 5px rgba(0,0,0,.15);
+
+}
+
+.history-item img{
+
+margin-top:10px;
+
+}
+
+#clearHistory{
+
+margin-top:20px;
+
+background:#dc3545;
+
+}
+
+#clearHistory:hover{
+
+background:#c82333;
+
+}
