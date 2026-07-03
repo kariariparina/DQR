@@ -6,54 +6,44 @@ const qrArea = document.getElementById("qrcode");
 let DATASET = [];
 
 /*
- * rsidsフォルダ内の
- * 00.txt ～ ff.txt
- * をすべて読み込む
+ * データセット読み込み
  */
 async function loadDataset() {
 
     DATASET = [];
 
-    let totalFiles = 256;
-    let loadedFiles = 0;
+    const totalFiles = 256;
+    let loaded = 0;
 
     for (let i = 0; i < totalFiles; i++) {
 
         const hex = i.toString(16).padStart(2, "0");
 
         loading.textContent =
-            `データ読込中... ${loadedFiles}/${totalFiles}`;
+            `データ読込中... ${loaded}/${totalFiles}`;
 
         try {
 
-            const response =
-                await fetch(`rsids/${hex}.txt`);
+            const res = await fetch(`rsids/${hex}.txt`);
 
-            if (!response.ok) {
-
-                console.error(`${hex}.txt 読み込み失敗`);
-
+            if (!res.ok) {
+                console.error(`${hex}.txt の読込失敗`);
                 continue;
-
             }
 
-            const text = await response.text();
+            const text = await res.text();
 
-            const lines = text.split(/\r?\n/);
+            text.split(/\r?\n/).forEach(line => {
 
-            for (const line of lines) {
+                line = line.trim();
 
-                const value = line.trim();
-
-                if (value.length > 0) {
-
-                    DATASET.push(value);
-
+                if (line.length > 0) {
+                    DATASET.push(line);
                 }
 
-            }
+            });
 
-            loadedFiles++;
+            loaded++;
 
         } catch (e) {
 
@@ -69,48 +59,11 @@ async function loadDataset() {
     button.disabled = false;
     button.textContent = "QRコード生成";
 
+    loadHistory();
+
 }
 
 loadDataset();
-
-function loadHistory(){
-
-const historyDiv=document.getElementById("history");
-
-historyDiv.innerHTML="";
-
-const history=JSON.parse(localStorage.getItem("qrHistory")||"[]");
-
-history.reverse().forEach(item=>{
-
-const div=document.createElement("div");
-
-div.className="history-item";
-
-div.innerHTML=`
-<b>目標RSID</b> : ${item.rsid}<br>
-<b>変換code</b> : ${item.id}<br>
-<b>QR文字列</b> : ${item.qr}<br>
-<div id="qr_${item.time}"></div>
-`;
-
-historyDiv.appendChild(div);
-
-new QRCode(document.getElementById(`qr_${item.time}`),{
-
-text:item.qr,
-
-width:120,
-
-height:120
-
-});
-
-});
-
-}
-
-loadHistory();
 
 /*
  * RSID検索
@@ -122,7 +75,7 @@ function getQRIndex(rsid) {
 }
 
 /*
- * インデックスからRSID取得
+ * index → RSID
  */
 function getStringAtIndex(index) {
 
@@ -133,28 +86,120 @@ function getStringAtIndex(index) {
     return DATASET[index];
 
 }
+
 /*
- * QR生成ボタン
+ * 履歴保存
+ */
+function saveHistory(playerId, rsid, qrString) {
+
+    let history =
+        JSON.parse(localStorage.getItem("qrHistory") || "[]");
+
+    history.push({
+
+        time: Date.now(),
+
+        id: playerId,
+
+        rsid: rsid,
+
+        qr: qrString
+
+    });
+
+    if (history.length > 200) {
+
+        history = history.slice(-200);
+
+    }
+
+    localStorage.setItem(
+        "qrHistory",
+        JSON.stringify(history)
+    );
+
+}
+
+/*
+ * 履歴表示
+ */
+function loadHistory() {
+
+    const historyArea =
+        document.getElementById("history");
+
+    if (!historyArea) return;
+
+    historyArea.innerHTML = "";
+
+    const history =
+        JSON.parse(localStorage.getItem("qrHistory") || "[]");
+
+    history.slice().reverse().forEach(item => {
+
+        const div = document.createElement("div");
+
+        div.className = "history-item";
+
+        const qrId = "qr_" + item.time;
+
+        div.innerHTML = `
+<b>RSID</b> : ${item.rsid}<br>
+<b>CODE</b> : ${item.id}<br>
+<b>QR</b> : ${item.qr}<br>
+<div id="${qrId}"></div>
+`;
+
+        historyArea.appendChild(div);
+
+        new QRCode(document.getElementById(qrId), {
+
+            text: item.qr,
+
+            width: 120,
+
+            height: 120
+
+        });
+
+    });
+
+}
+
+/*
+ * 履歴削除
+ */
+function clearHistory() {
+
+    localStorage.removeItem("qrHistory");
+
+    loadHistory();
+
+}
+
+/*
+ * QR生成処理
  */
 button.addEventListener("click", () => {
 
     result.textContent = "";
     qrArea.innerHTML = "";
 
-    const playerId = document
-        .getElementById("playerid")
+    const playerId =
+        document.getElementById("playerid")
         .value
         .trim();
 
-    const targetRSID = document
-        .getElementById("rsid")
+    const targetRSID =
+        document.getElementById("rsid")
         .value
         .trim()
         .replaceAll("_", "");
 
-    if (playerId === "" || targetRSID === "") {
+    if (!playerId || !targetRSID) {
 
         alert("変換codeと目標RSIDを入力してください。");
+
         return;
 
     }
@@ -162,6 +207,7 @@ button.addEventListener("click", () => {
     if (!/^[0-9a-fA-F]+$/.test(playerId)) {
 
         alert("変換codeは16進数で入力してください。");
+
         return;
 
     }
@@ -173,6 +219,7 @@ button.addEventListener("click", () => {
     if (rsidIndex === -1) {
 
         alert("RSIDが見つかりません。");
+
         return;
 
     }
@@ -196,6 +243,7 @@ button.addEventListener("click", () => {
     if (qrString === null) {
 
         alert("計算結果がデータセットの範囲外です。");
+
         return;
 
     }
@@ -219,16 +267,19 @@ QR文字列 : ${qrString}`;
 
     });
 
+    /*
+     * 履歴保存
+     */
+    saveHistory(playerId, targetRSID, qrString);
+
+    /*
+     * 履歴更新
+     */
+    loadHistory();
+
 });
 
-document.getElementById("clearHistory").onclick=function(){
-
-if(confirm("履歴を削除しますか？")){
-
-localStorage.removeItem("qrHistory");
-
+/*
+ * 初回表示
+ */
 loadHistory();
-
-}
-
-};
