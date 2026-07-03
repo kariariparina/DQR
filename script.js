@@ -73,6 +73,45 @@ async function loadDataset() {
 
 loadDataset();
 
+function loadHistory(){
+
+const historyDiv=document.getElementById("history");
+
+historyDiv.innerHTML="";
+
+const history=JSON.parse(localStorage.getItem("qrHistory")||"[]");
+
+history.reverse().forEach(item=>{
+
+const div=document.createElement("div");
+
+div.className="history-item";
+
+div.innerHTML=`
+<b>目標RSID</b> : ${item.rsid}<br>
+<b>変換code</b> : ${item.id}<br>
+<b>QR文字列</b> : ${item.qr}<br>
+<div id="qr_${item.time}"></div>
+`;
+
+historyDiv.appendChild(div);
+
+new QRCode(document.getElementById(`qr_${item.time}`),{
+
+text:item.qr,
+
+width:120,
+
+height:120
+
+});
+
+});
+
+}
+
+loadHistory();
+
 /*
  * RSID検索
  */
@@ -181,3 +220,15 @@ QR文字列 : ${qrString}`;
     });
 
 });
+
+document.getElementById("clearHistory").onclick=function(){
+
+if(confirm("履歴を削除しますか？")){
+
+localStorage.removeItem("qrHistory");
+
+loadHistory();
+
+}
+
+};
