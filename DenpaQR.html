@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>QR生成ツール</title>
+
+</head>
+
+<body>
+
+    <h2>QR生成ツール</h2>
+
+    <div>
+
+        <label>変換code</label><br>
+        <input
+            type="text"
+            id="playerId"
+            placeholder="例 : cc0db7">
+
+    </div>
+
+    <br>
+
+    <div>
+
+        <label>目標RSID</label><br>
+        <input
+            type="text"
+            id="targetRsid"
+            placeholder="例 : aoFMuZ">
+
+    </div>
+
+    <br>
+
+    <button id="generateButton">
+
+        QRコードを生成
+
+    </button>
+
+    <hr>
+
+    <div id="status">
+
+        データを読み込んでいます...
+
+    </div>
+
+    <br>
+
+    <div id="qr"></div>
+
+    <br>
+
+    <pre id="log"></pre>
+
+    <!-- QRコード生成ライブラリ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <!-- メイン処理 -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>
