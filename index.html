@@ -1,29 +1,50 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>QR Generator</title>
 
-<link rel="stylesheet" href="DenpaQR.css">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Denpa QR Generator</title>
+
+<link rel="stylesheet" href="style.css">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 </head>
+
 <body>
 
-<h2>QR Generator</h2>
+<div class="container">
 
-<div class="panel">
+<h1>電波人間 QR Generator</h1>
 
-<label>変換code</label>
-<input id="playerid" placeholder="cc0db7">
+<div class="card">
 
-<label>目標RSID</label>
-<input id="rsid" placeholder="aoFMuZ">
+<label for="playerid">変換code</label>
+<input
+type="text"
+id="playerid"
+placeholder="例：cc0db7">
 
-<button id="generate">
-QRコード生成
+<label for="rsid">目標RSID</label>
+<input
+type="text"
+id="rsid"
+placeholder="例：aoFMuZ">
+
+<button id="generate" disabled>
+データ読込中...
 </button>
+
+</div>
+
+<div class="status">
+
+<p id="loading">
+データセットを読み込んでいます...
+</p>
 
 </div>
 
@@ -31,7 +52,10 @@ QRコード生成
 
 <div id="qrcode"></div>
 
-<script src="DenpaQR.js"></script>
+</div>
+
+<script src="script.js"></script>
 
 </body>
+
 </html>
