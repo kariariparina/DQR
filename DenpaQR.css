@@ -1,0 +1,53 @@
+body{
+
+    font-family:sans-serif;
+
+    margin:30px;
+
+}
+
+.container{
+
+    max-width:600px;
+
+}
+
+.inputBox{
+
+    margin-bottom:20px;
+
+}
+
+input{
+
+    width:100%;
+
+    padding:8px;
+
+    font-size:16px;
+
+}
+
+button{
+
+    padding:10px 25px;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+}
+
+#qr{
+
+    margin-top:30px;
+
+}
+
+#log{
+
+    margin-top:20px;
+
+    white-space:pre-wrap;
+
+}
