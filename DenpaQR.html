@@ -3,68 +3,68 @@
 
 <head>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>QR生成ツール</title>
+<title>QR生成ツール</title>
 
 </head>
 
 <body>
 
-    <h2>QR生成ツール</h2>
+<h2>QR生成ツール</h2>
 
-    <div>
+<div>
 
-        <label>変換code</label><br>
-        <input
-            type="text"
-            id="playerId"
-            placeholder="例 : cc0db7">
+    <label>変換code</label><br>
 
-    </div>
+    <input
+        id="playerId"
+        type="text"
+        placeholder="例：cc0db7">
 
-    <br>
+</div>
 
-    <div>
+<br>
 
-        <label>目標RSID</label><br>
-        <input
-            type="text"
-            id="targetRsid"
-            placeholder="例 : aoFMuZ">
+<div>
 
-    </div>
+    <label>目標RSID</label><br>
 
-    <br>
+    <input
+        id="targetRsid"
+        type="text"
+        placeholder="例：aoFMuZ">
 
-    <button id="generateButton">
+</div>
 
-        QRコードを生成
+<br>
 
-    </button>
+<button id="generateButton">
 
-    <hr>
+QRコードを生成
 
-    <div id="status">
+</button>
 
-        データを読み込んでいます...
+<hr>
 
-    </div>
+<div id="status">
 
-    <br>
+データを読み込み中...
 
-    <div id="qr"></div>
+</div>
 
-    <br>
+<br>
 
-    <pre id="log"></pre>
+<div id="qr"></div>
 
-    <!-- QRコード生成ライブラリ -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<br>
 
-    <!-- メイン処理 -->
-    <script src="script.js"></script>
+<pre id="log"></pre>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script src="script.js"></script>
 
 </body>
 
