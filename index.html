@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Denpa QR Generator</title>
+<title>電波人間 QR Generator</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -23,19 +23,25 @@
 <div class="card">
 
 <label for="playerid">変換code</label>
+
 <input
 type="text"
 id="playerid"
 placeholder="例：cc0db7">
 
 <label for="rsid">目標RSID</label>
+
 <input
 type="text"
 id="rsid"
 placeholder="例：aoFMuZ">
 
-<button id="generate" disabled>
+<button
+id="generate"
+disabled>
+
 データ読込中...
+
 </button>
 
 </div>
@@ -43,7 +49,9 @@ placeholder="例：aoFMuZ">
 <div class="status">
 
 <p id="loading">
+
 データセットを読み込んでいます...
+
 </p>
 
 </div>
@@ -51,11 +59,17 @@ placeholder="例：aoFMuZ">
 <div id="result"></div>
 
 <div id="qrcode"></div>
-  
+
+<hr>
+
 <h2>生成履歴</h2>
 
-<button id="clearHistory">
+<button
+id="clearHistory"
+onclick="clearHistory()">
+
 履歴を削除
+
 </button>
 
 <div id="history"></div>
